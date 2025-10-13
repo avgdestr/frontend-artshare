@@ -97,7 +97,33 @@ const Signin = () => {
         "Login succeeded but no token received. If your server uses session cookies, ensure CORS allows credentials and that the login endpoint sets cookies."
       );
     } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || "Login failed");
+      // Helpful debugging in dev: log the whole response if available
+      if ((import.meta as any).env?.DEV) {
+        console.error("Login error response:", err?.response || err);
+      }
+
+      // Prefer common DRF shapes: { non_field_errors: [...], detail: '...', field: ['...'] }
+      const resp = err?.response?.data;
+      let message = "Login failed";
+      if (resp) {
+        if (typeof resp === "string") message = resp;
+        else if (resp.detail) message = resp.detail;
+        else if (resp.non_field_errors)
+          message = resp.non_field_errors.join(" ");
+        else if (resp.username)
+          message = Array.isArray(resp.username)
+            ? resp.username.join(" ")
+            : String(resp.username);
+        else if (resp.password)
+          message = Array.isArray(resp.password)
+            ? resp.password.join(" ")
+            : String(resp.password);
+        else message = JSON.stringify(resp);
+      } else {
+        message = err.message || message;
+      }
+
+      setError(message);
     } finally {
       setLoading(false);
     }
