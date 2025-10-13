@@ -62,9 +62,27 @@ const ArtistPage: React.FC = () => {
   if (loading) return <div className="p-4 text-center">Loading artist...</div>;
   if (error) return <div className="p-4 text-center text-red-500">{error}</div>;
 
-  const displayName = artist?.username || artistId;
-  const avatar = artist?.profile_picture || "https://via.placeholder.com/150";
-  const bio = artist?.bio || "";
+  // Prefer artist username from fetched artist, but fall back to artwork-level fields
+  const displayName =
+    artist?.username ||
+    artworks[0]?.artist_username ||
+    artworks[0]?.artist_name ||
+    artworks[0]?.artist_display_name ||
+    artistId;
+  const avatar = artist?.profile_picture || artworks[0]?.artist_profile_picture || "https://via.placeholder.com/150";
+  const bio = artist?.bio || artworks[0]?.artist_bio || "";
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (lightboxIdx === null) return;
+      if (e.key === "ArrowLeft") setLightboxIdx((i) => (i === null ? null : (i - 1 + artworks.length) % artworks.length));
+      if (e.key === "ArrowRight") setLightboxIdx((i) => (i === null ? null : (i + 1) % artworks.length));
+      if (e.key === "Escape") setLightboxIdx(null);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIdx, artworks.length]);
 
   return (
     <div className="p-4">
@@ -102,16 +120,20 @@ const ArtistPage: React.FC = () => {
         </div>
 
         <div className="bg-white p-4 rounded shadow">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {artworks.map((a) => (
-              <div key={a.id} className="relative group">
-                <img
-                  src={a.image}
-                  alt={a.title}
-                  className="w-full h-48 object-cover rounded"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition flex items-end justify-between p-3 text-white opacity-0 group-hover:opacity-100">
-                  <div className="text-sm">{a.title}</div>
+          {/* Masonry: columns with break-inside to flow items */}
+          <div
+            className="masonry-columns"
+            style={{ columnCount: 3, columnGap: 12 }}
+          >
+            {artworks.map((a, idx) => (
+              <div
+                key={a.id}
+                className="mb-3 break-inside-avoid rounded overflow-hidden relative cursor-pointer"
+                onClick={() => setLightboxIdx(idx)}
+              >
+                <img src={a.image} alt={a.title} className="w-full object-cover" />
+                <div className="p-2 bg-white">
+                  <div className="font-medium text-sm">{a.title}</div>
                 </div>
               </div>
             ))}
@@ -119,6 +141,41 @@ const ArtistPage: React.FC = () => {
               <div className="col-span-full text-center text-gray-500 py-10">No artworks found for this artist.</div>
             )}
           </div>
+          {/* Lightbox */}
+          {lightboxIdx !== null && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
+              <button
+                className="absolute top-4 right-4 text-white text-2xl"
+                onClick={() => setLightboxIdx(null)}
+              >
+                &times;
+              </button>
+              <button
+                className="absolute left-4 text-white text-3xl"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIdx((lightboxIdx - 1 + artworks.length) % artworks.length);
+                }}
+              >
+                &#8592;
+              </button>
+              <img
+                src={artworks[lightboxIdx].image}
+                alt={artworks[lightboxIdx].title}
+                className="max-h-[80vh] max-w-[80vw] object-contain"
+                onClick={() => setLightboxIdx(null)}
+              />
+              <button
+                className="absolute right-4 text-white text-3xl"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIdx((lightboxIdx + 1) % artworks.length);
+                }}
+              >
+                &#8594;
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
