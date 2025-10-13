@@ -3,7 +3,8 @@
   # Instruct Netlify to run the build from that base directory.
   base = "my-app"
   # Ensure devDependencies (typescript, vite) are installed before building
-  command = "npm install && npm run build"
+  # Use `npm ci --include=dev` for reproducible installs and include dev deps.
+  command = "npm ci --include=dev && npm run build"
   publish = "dist"
 
 [functions]
@@ -12,3 +13,5 @@
 
 [context.production.environment]
   NODE_ENV = "production"
+  # Make sure npm installs devDependencies even with NODE_ENV=production
+  NPM_CONFIG_PRODUCTION = "false"
