@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getAllArtworks } from "../services/apihelper";
 
 interface ArtworkItem {
@@ -14,10 +14,8 @@ interface ArtworkItem {
 }
 
 const GetManga = () => {
-  const navigate = useNavigate();
   const [items, setItems] = useState<ArtworkItem[]>([]);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
-  const [openMenuIdx, setOpenMenuIdx] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,47 +69,7 @@ const GetManga = () => {
           <div className="art-card card-color shadow" key={img.id}>
             <div className="card-header p-1 text-center text-light relative">
               <h5>{img.title}</h5>
-              <button
-                className="absolute top-1 right-1 text-white p-1 hover:opacity-80"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenMenuIdx(openMenuIdx === idx ? null : idx);
-                }}
-                aria-label="More"
-              >
-                <i className="bi bi-three-dots-vertical"></i>
-              </button>
-              {openMenuIdx === idx && (
-                <div
-                  className="absolute top-8 right-1 bg-white text-black rounded shadow p-2 z-10"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    className="block px-3 py-1 text-left w-full hover:bg-gray-100"
-                    onClick={() => {
-                      // navigate to artist page; prefer artist id when numeric else username
-                      const a: any = img as any;
-                      const artistVal = a.artist;
-                      const artLevelName =
-                        a.artist_username ||
-                        a.artist_name ||
-                        a.artist_display_name;
-                      if (typeof artistVal === "number")
-                        navigate(`/artists/${artistVal}`);
-                      else if (artLevelName)
-                        navigate(`/artists/${artLevelName}`);
-                      else if (typeof artistVal === "object" && artistVal?.id)
-                        navigate(`/artists/${artistVal.id}`);
-                      else if (typeof artistVal === "string")
-                        navigate(`/artists/${artistVal}`);
-                      else navigate(`/artists/${String(a.id)}`);
-                      setOpenMenuIdx(null);
-                    }}
-                  >
-                    See more from this artist
-                  </button>
-                </div>
-              )}
+              {/* artist link will be on the artist name below */}
             </div>
             <img
               className="art-img p-1 img"
@@ -125,20 +83,34 @@ const GetManga = () => {
                 By{" "}
                 {(() => {
                   const a: any = img.artist;
-                  // If the artwork object carries a username field separately, prefer that
                   const artLevelName =
                     (img as any).artist_username ||
                     (img as any).artist_name ||
                     (img as any).artist_display_name;
-                  if (artLevelName) return artLevelName;
-                  if (!a && a !== 0) return "Unknown";
-                  if (typeof a === "string") return a;
-                  if (typeof a === "number") return String(a);
-                  if (a.artist_username) return a.artist_username;
-                  if (a.username) return a.username;
-                  if (a.artist && typeof a.artist === "object")
-                    return a.artist.username || "Unknown";
-                  return "Unknown";
+                  let display = "Unknown";
+                  let target: string | number = img.id;
+                  if (artLevelName) {
+                    display = artLevelName;
+                    target = artLevelName;
+                  } else if (!a && a !== 0) {
+                    display = "Unknown";
+                  } else if (typeof a === "string") {
+                    display = a;
+                    target = a;
+                  } else if (typeof a === "number") {
+                    display = String(a);
+                    target = a;
+                  } else if (a?.artist_username) {
+                    display = a.artist_username;
+                    target = a.artist_username;
+                  } else if (a?.username) {
+                    display = a.username;
+                    target = a.username;
+                  } else if (a?.artist && typeof a.artist === "object") {
+                    display = a.artist.username || "Unknown";
+                    target = a.artist.id || display;
+                  }
+                  return <Link to={`/artists/${target}`}>{display}</Link>;
                 })()}
               </p>
             </div>
