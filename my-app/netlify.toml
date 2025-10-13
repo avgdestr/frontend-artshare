@@ -2,10 +2,12 @@
   # The repository contains the frontend inside the 'my-app' subdirectory.
   # Instruct Netlify to run the build from that base directory.
   base = "my-app"
-  command = "npm run build"
-  publish = "my-app/dist"
+  # Ensure devDependencies (typescript, vite) are installed before building
+  command = "npm install && npm run build"
+  publish = "dist"
 
 [functions]
+  # functions directory is relative to the base
   directory = "netlify/functions"
 
 [context.production.environment]
