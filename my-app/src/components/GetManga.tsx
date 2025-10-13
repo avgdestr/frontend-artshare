@@ -81,12 +81,14 @@ const GetManga = () => {
                 By{" "}
                 {(() => {
                   const a: any = img.artist;
+                  // If the artwork object carries a username field separately, prefer that
+                  const artLevelName = (img as any).artist_username || (img as any).artist_name || (img as any).artist_display_name;
+                  if (artLevelName) return artLevelName;
                   if (!a && a !== 0) return "Unknown";
                   if (typeof a === "string") return a;
                   if (typeof a === "number") return String(a);
                   if (a.artist_username) return a.artist_username;
                   if (a.username) return a.username;
-                  // Fallback: try nested 'artist' property (some responses are odd)
                   if (a.artist && typeof a.artist === "object")
                     return a.artist.username || "Unknown";
                   return "Unknown";
@@ -122,14 +124,16 @@ const GetManga = () => {
             <p>
               By{" "}
               {(() => {
-                const a: any = (items[selectedIdx] as any).artist;
+                const item: any = items[selectedIdx] as any;
+                const a: any = item.artist;
+                const artLevelName = item.artist_username || item.artist_name || item.artist_display_name;
+                if (artLevelName) return artLevelName;
                 if (!a && a !== 0) return "Unknown";
                 if (typeof a === "string") return a;
                 if (typeof a === "number") return String(a);
                 if (a.artist_username) return a.artist_username;
                 if (a.username) return a.username;
-                if (a.artist && typeof a.artist === "object")
-                  return a.artist.username || "Unknown";
+                if (a.artist && typeof a.artist === "object") return a.artist.username || "Unknown";
                 return "Unknown";
               })()}
             </p>
