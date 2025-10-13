@@ -35,13 +35,22 @@ const ArtistPage: React.FC = () => {
           const n = Number(artistId);
           if (!Number.isNaN(n)) {
             if (typeof art.artist === "number") return art.artist === n;
-            if (art.artist && typeof art.artist === "object") return art.artist.id === n || art.artist?.pk === n;
+            if (art.artist && typeof art.artist === "object")
+              return art.artist.id === n || art.artist?.pk === n;
             return false;
           }
           const uname = String(artistId).toLowerCase();
-          if (typeof art.artist === "string") return art.artist.toLowerCase() === uname;
-          if (art.artist && typeof art.artist === "object") return (art.artist.username || "").toLowerCase() === uname || (art.artist.artist_username || "").toLowerCase() === uname;
-          return (art.artist_username || "").toLowerCase() === uname || (art.artist_name || "").toLowerCase() === uname;
+          if (typeof art.artist === "string")
+            return art.artist.toLowerCase() === uname;
+          if (art.artist && typeof art.artist === "object")
+            return (
+              (art.artist.username || "").toLowerCase() === uname ||
+              (art.artist.artist_username || "").toLowerCase() === uname
+            );
+          return (
+            (art.artist_username || "").toLowerCase() === uname ||
+            (art.artist_name || "").toLowerCase() === uname
+          );
         });
         setArtworks(filtered);
       })
@@ -63,21 +72,29 @@ const ArtistPage: React.FC = () => {
   if (error) return <div className="p-4 text-center text-red-500">{error}</div>;
 
   // Prefer artist username from fetched artist, but fall back to artwork-level fields
+  const firstArt = artworks && artworks.length > 0 ? artworks[0] : null;
   const displayName =
     artist?.username ||
-    artworks[0]?.artist_username ||
-    artworks[0]?.artist_name ||
-    artworks[0]?.artist_display_name ||
+    firstArt?.artist_username ||
+    firstArt?.artist_name ||
+    firstArt?.artist_display_name ||
     artistId;
-  const avatar = artist?.profile_picture || artworks[0]?.artist_profile_picture || "https://via.placeholder.com/150";
-  const bio = artist?.bio || artworks[0]?.artist_bio || "";
+  const avatar =
+    artist?.profile_picture ||
+    firstArt?.artist_profile_picture ||
+    "https://via.placeholder.com/150";
+  const bio = artist?.bio || firstArt?.artist_bio || "";
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (lightboxIdx === null) return;
-      if (e.key === "ArrowLeft") setLightboxIdx((i) => (i === null ? null : (i - 1 + artworks.length) % artworks.length));
-      if (e.key === "ArrowRight") setLightboxIdx((i) => (i === null ? null : (i + 1) % artworks.length));
+      if (e.key === "ArrowLeft")
+        setLightboxIdx((i) =>
+          i === null ? null : (i - 1 + artworks.length) % artworks.length
+        );
+      if (e.key === "ArrowRight")
+        setLightboxIdx((i) => (i === null ? null : (i + 1) % artworks.length));
       if (e.key === "Escape") setLightboxIdx(null);
     }
     window.addEventListener("keydown", onKey);
@@ -103,14 +120,6 @@ const ArtistPage: React.FC = () => {
                   <div className="font-bold text-lg">{artworks.length}</div>
                   <div className="text-sm text-gray-500">posts</div>
                 </div>
-                <div>
-                  <div className="font-bold text-lg">0</div>
-                  <div className="text-sm text-gray-500">followers</div>
-                </div>
-                <div>
-                  <div className="font-bold text-lg">0</div>
-                  <div className="text-sm text-gray-500">following</div>
-                </div>
               </div>
             </div>
             <div className="mt-3">
@@ -131,51 +140,73 @@ const ArtistPage: React.FC = () => {
                 className="mb-3 break-inside-avoid rounded overflow-hidden relative cursor-pointer"
                 onClick={() => setLightboxIdx(idx)}
               >
-                <img src={a.image} alt={a.title} className="w-full object-cover" />
+                <img
+                  src={a.image}
+                  alt={a.title}
+                  className="w-full object-cover"
+                />
                 <div className="p-2 bg-white">
                   <div className="font-medium text-sm">{a.title}</div>
                 </div>
               </div>
             ))}
             {artworks.length === 0 && (
-              <div className="col-span-full text-center text-gray-500 py-10">No artworks found for this artist.</div>
+              <div className="col-span-full text-center text-gray-500 py-10">
+                No artworks found for this artist.
+              </div>
             )}
           </div>
           {/* Lightbox */}
-          {lightboxIdx !== null && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-              <button
-                className="absolute top-4 right-4 text-white text-2xl"
+          {lightboxIdx !== null &&
+            lightboxIdx >= 0 &&
+            lightboxIdx < artworks.length && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
                 onClick={() => setLightboxIdx(null)}
               >
-                &times;
-              </button>
-              <button
-                className="absolute left-4 text-white text-3xl"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLightboxIdx((lightboxIdx - 1 + artworks.length) % artworks.length);
-                }}
-              >
-                &#8592;
-              </button>
-              <img
-                src={artworks[lightboxIdx].image}
-                alt={artworks[lightboxIdx].title}
-                className="max-h-[80vh] max-w-[80vw] object-contain"
-                onClick={() => setLightboxIdx(null)}
-              />
-              <button
-                className="absolute right-4 text-white text-3xl"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLightboxIdx((lightboxIdx + 1) % artworks.length);
-                }}
-              >
-                &#8594;
-              </button>
-            </div>
-          )}
+                <button
+                  className="absolute top-4 right-4 text-white text-2xl"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIdx(null);
+                  }}
+                >
+                  &times;
+                </button>
+                <button
+                  className="absolute left-4 text-white text-3xl"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIdx((i) =>
+                      i === null
+                        ? null
+                        : (i - 1 + artworks.length) % artworks.length
+                    );
+                  }}
+                >
+                  &#8592;
+                </button>
+                <img
+                  src={artworks[lightboxIdx].image}
+                  alt={artworks[lightboxIdx].title}
+                  className="max-h-[80vh] max-w-[80vw] object-contain"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                />
+                <button
+                  className="absolute right-4 text-white text-3xl"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIdx((i) =>
+                      i === null ? null : (i + 1) % artworks.length
+                    );
+                  }}
+                >
+                  &#8594;
+                </button>
+              </div>
+            )}
         </div>
       </div>
     </div>

@@ -92,11 +92,18 @@ const GetManga = () => {
                       // navigate to artist page; prefer artist id when numeric else username
                       const a: any = img as any;
                       const artistVal = a.artist;
-                      const artLevelName = a.artist_username || a.artist_name || a.artist_display_name;
-                      if (typeof artistVal === "number") navigate(`/artists/${artistVal}`);
-                      else if (artLevelName) navigate(`/artists/${artLevelName}`);
-                      else if (typeof artistVal === "object" && artistVal?.id) navigate(`/artists/${artistVal.id}`);
-                      else if (typeof artistVal === "string") navigate(`/artists/${artistVal}`);
+                      const artLevelName =
+                        a.artist_username ||
+                        a.artist_name ||
+                        a.artist_display_name;
+                      if (typeof artistVal === "number")
+                        navigate(`/artists/${artistVal}`);
+                      else if (artLevelName)
+                        navigate(`/artists/${artLevelName}`);
+                      else if (typeof artistVal === "object" && artistVal?.id)
+                        navigate(`/artists/${artistVal.id}`);
+                      else if (typeof artistVal === "string")
+                        navigate(`/artists/${artistVal}`);
                       else navigate(`/artists/${String(a.id)}`);
                       setOpenMenuIdx(null);
                     }}

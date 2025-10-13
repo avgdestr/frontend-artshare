@@ -74,7 +74,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/art" element={<GetManga />} />
-  <Route path="/artists/:artistId" element={<ArtistPage />} />
+        <Route path="/artists/:artistId" element={<ArtistPage />} />
         <Route
           path="/shareart"
           element={
