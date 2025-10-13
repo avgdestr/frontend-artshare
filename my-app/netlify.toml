@@ -1,6 +1,9 @@
 [build]
+  # The repository contains the frontend inside the 'my-app' subdirectory.
+  # Instruct Netlify to run the build from that base directory.
+  base = "my-app"
   command = "npm run build"
-  publish = "dist"
+  publish = "my-app/dist"
 
 [functions]
   directory = "netlify/functions"
