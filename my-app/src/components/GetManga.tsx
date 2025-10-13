@@ -5,7 +5,11 @@ interface ArtworkItem {
   id: number;
   title: string;
   image: string;
-  artist: { username: string } | string;
+  artist:
+    | { username?: string }
+    | { artist_username?: string }
+    | string
+    | number;
 }
 
 const GetManga = () => {
@@ -75,9 +79,18 @@ const GetManga = () => {
             <div className="art-info">
               <p>
                 By{" "}
-                {typeof img.artist === "string"
-                  ? img.artist
-                  : img.artist.username}
+                {(() => {
+                  const a: any = img.artist;
+                  if (!a && a !== 0) return "Unknown";
+                  if (typeof a === "string") return a;
+                  if (typeof a === "number") return String(a);
+                  if (a.artist_username) return a.artist_username;
+                  if (a.username) return a.username;
+                  // Fallback: try nested 'artist' property (some responses are odd)
+                  if (a.artist && typeof a.artist === "object")
+                    return a.artist.username || "Unknown";
+                  return "Unknown";
+                })()}
               </p>
             </div>
           </div>
@@ -108,9 +121,17 @@ const GetManga = () => {
             <h3>{(items[selectedIdx] as any).title}</h3>
             <p>
               By{" "}
-              {typeof (items[selectedIdx] as any).artist === "string"
-                ? (items[selectedIdx] as any).artist
-                : (items[selectedIdx] as any).artist.username}
+              {(() => {
+                const a: any = (items[selectedIdx] as any).artist;
+                if (!a && a !== 0) return "Unknown";
+                if (typeof a === "string") return a;
+                if (typeof a === "number") return String(a);
+                if (a.artist_username) return a.artist_username;
+                if (a.username) return a.username;
+                if (a.artist && typeof a.artist === "object")
+                  return a.artist.username || "Unknown";
+                return "Unknown";
+              })()}
             </p>
           </div>
           <span className="lightbox-close">&times;</span>
