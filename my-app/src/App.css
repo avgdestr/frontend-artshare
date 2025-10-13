@@ -10,7 +10,8 @@
     border-bottom: 2px solid #ffd700;
 }
 .page-background {
-  background-image: url('/src/Images/home4.jpg');
+  /* Use a relative path (lowercase 'images') so Vite resolves the asset during build */
+  background-image: url('./images/home4.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
