@@ -91,9 +91,17 @@ const ArtistPage: React.FC = () => {
     return `${API_BASE_URL.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
   };
 
+  // Try multiple locations where the backend may place the profile picture
+  const avatarCandidates = [
+    artist?.profile_picture,
+    artist?.profile?.profile_picture,
+    firstArt?.artist_profile_picture,
+    firstArt?.artist?.profile_picture,
+    firstArt?.artist?.profile_picture_url,
+    firstArt?.artist?.profilePicture,
+  ];
   const avatar =
-    resolveUrl(artist?.profile_picture) ||
-    resolveUrl(firstArt?.artist_profile_picture) ||
+    avatarCandidates.map(resolveUrl).find((u) => !!u) ||
     "https://via.placeholder.com/150";
   const bio = artist?.bio || firstArt?.artist_bio || "";
   // lightbox state and key handler are declared earlier to keep hook order stable
