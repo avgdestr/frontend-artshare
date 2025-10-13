@@ -30,7 +30,8 @@ const ArtistPage: React.FC = () => {
       .then(([all, a]) => {
         if (!mounted) return;
         setArtist(a || null);
-        const filtered = (all as any[]).filter((aw) => {
+        const allArr = Array.isArray(all) ? (all as any[]) : [];
+        const filtered = allArr.filter((aw) => {
           const art = aw as any;
           const n = Number(artistId);
           if (!Number.isNaN(n)) {
@@ -52,7 +53,8 @@ const ArtistPage: React.FC = () => {
             (art.artist_name || "").toLowerCase() === uname
           );
         });
-        setArtworks(filtered);
+        // Filter out any invalid entries (null, non-objects) to avoid runtime errors
+        setArtworks(filtered.filter((x) => x && typeof x === "object"));
       })
       .catch((err) => {
         console.error(err);
@@ -134,22 +136,30 @@ const ArtistPage: React.FC = () => {
             className="masonry-columns"
             style={{ columnCount: 3, columnGap: 12 }}
           >
-            {artworks.map((a, idx) => (
-              <div
-                key={a.id}
-                className="mb-3 break-inside-avoid rounded overflow-hidden relative cursor-pointer"
-                onClick={() => setLightboxIdx(idx)}
-              >
-                <img
-                  src={a.image}
-                  alt={a.title}
-                  className="w-full object-cover"
-                />
-                <div className="p-2 bg-white">
-                  <div className="font-medium text-sm">{a.title}</div>
+            {/**
+             * Only render artworks that look like objects and have an image string.
+             * This avoids runtime exceptions when the API returns unexpected shapes.
+             */}
+            {artworks
+              .filter(
+                (a) => a && typeof a === "object" && typeof a.image === "string"
+              )
+              .map((a, idx) => (
+                <div
+                  key={a.id ?? idx}
+                  className="mb-3 break-inside-avoid rounded overflow-hidden relative cursor-pointer"
+                  onClick={() => setLightboxIdx(idx)}
+                >
+                  <img
+                    src={a.image}
+                    alt={a.title || "Artwork"}
+                    className="w-full object-cover"
+                  />
+                  <div className="p-2 bg-white">
+                    <div className="font-medium text-sm">{a.title}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
             {artworks.length === 0 && (
               <div className="col-span-full text-center text-gray-500 py-10">
                 No artworks found for this artist.
@@ -159,7 +169,11 @@ const ArtistPage: React.FC = () => {
           {/* Lightbox */}
           {lightboxIdx !== null &&
             lightboxIdx >= 0 &&
-            lightboxIdx < artworks.length && (
+            Array.isArray(artworks) &&
+            lightboxIdx <
+              artworks.filter(
+                (a) => a && typeof a === "object" && typeof a.image === "string"
+              ).length && (
               <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
                 onClick={() => setLightboxIdx(null)}
@@ -186,14 +200,27 @@ const ArtistPage: React.FC = () => {
                 >
                   &#8592;
                 </button>
-                <img
-                  src={artworks[lightboxIdx].image}
-                  alt={artworks[lightboxIdx].title}
-                  className="max-h-[80vh] max-w-[80vw] object-contain"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                />
+                {
+                  // Safely resolve current artwork for the lightbox
+                }
+                {(() => {
+                  const visible = artworks.filter(
+                    (a) =>
+                      a && typeof a === "object" && typeof a.image === "string"
+                  );
+                  const cur = visible[lightboxIdx as number];
+                  if (!cur) return null;
+                  return (
+                    <img
+                      src={cur.image}
+                      alt={cur.title}
+                      className="max-h-[80vh] max-w-[80vw] object-contain"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    />
+                  );
+                })()}
                 <button
                   className="absolute right-4 text-white text-3xl"
                   onClick={(e) => {
