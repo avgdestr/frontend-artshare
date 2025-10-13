@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getArtist, getAllArtworks } from "../services/apihelper";
+import { API_BASE_URL } from "../services/api";
 
 const ArtistPage: React.FC = () => {
   const { artistId } = useParams<{ artistId: string }>();
@@ -82,9 +83,17 @@ const ArtistPage: React.FC = () => {
     firstArt?.artist_name ||
     firstArt?.artist_display_name ||
     artistId;
+  const resolveUrl = (url: string | undefined | null) => {
+    if (!url) return null;
+    // If it's already absolute, return as-is
+    if (/^https?:\/\//i.test(url)) return url;
+    // Otherwise, prefix with API base
+    return `${API_BASE_URL.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+  };
+
   const avatar =
-    artist?.profile_picture ||
-    firstArt?.artist_profile_picture ||
+    resolveUrl(artist?.profile_picture) ||
+    resolveUrl(firstArt?.artist_profile_picture) ||
     "https://via.placeholder.com/150";
   const bio = artist?.bio || firstArt?.artist_bio || "";
   // lightbox state and key handler are declared earlier to keep hook order stable
@@ -137,7 +146,8 @@ const ArtistPage: React.FC = () => {
                   onClick={() => setLightboxIdx(idx)}
                 >
                   <img
-                    src={a.image}
+                    src={typeof a.image === "string" ? ( /^https?:\/\//i.test(a.image) ? a.image : `${API_BASE_URL.replace(/\/$/, "")}/${String(a.image).replace(/^\//, "")}` ) : ""
+                    }
                     alt={a.title || "Artwork"}
                     className="w-full object-cover"
                   />
