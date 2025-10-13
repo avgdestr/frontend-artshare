@@ -8,6 +8,7 @@ import Profile from "./components/Profile";
 import Signup from "./components/Signup";
 import Signin from "./components/Signin";
 import RequireAuth from "./components/RequireAuth";
+import ArtistPage from "./components/ArtistPage";
 import { useAuth } from "./services/AuthContext";
 
 function App() {
@@ -73,6 +74,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/art" element={<GetManga />} />
+  <Route path="/artists/:artistId" element={<ArtistPage />} />
         <Route
           path="/shareart"
           element={
