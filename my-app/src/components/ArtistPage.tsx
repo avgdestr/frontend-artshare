@@ -8,6 +8,7 @@ const ArtistPage: React.FC = () => {
   const [artworks, setArtworks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -86,22 +87,7 @@ const ArtistPage: React.FC = () => {
     firstArt?.artist_profile_picture ||
     "https://via.placeholder.com/150";
   const bio = artist?.bio || firstArt?.artist_bio || "";
-  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (lightboxIdx === null) return;
-      if (e.key === "ArrowLeft")
-        setLightboxIdx((i) =>
-          i === null ? null : (i - 1 + artworks.length) % artworks.length
-        );
-      if (e.key === "ArrowRight")
-        setLightboxIdx((i) => (i === null ? null : (i + 1) % artworks.length));
-      if (e.key === "Escape") setLightboxIdx(null);
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [lightboxIdx, artworks.length]);
+  // lightbox state and key handler are declared earlier to keep hook order stable
 
   return (
     <div className="p-4">
