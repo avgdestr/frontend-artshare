@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { getArtist } from "../services/apihelper";
 import { API_BASE_URL } from "../services/api";
 import type { Artist as ArtistType } from "../services/apihelper";
+import { useAuth } from "../services/AuthContext";
 
 const Profile = () => {
   const [user, setUser] = useState<ArtistType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { logout } = useAuth();
 
   useEffect(() => {
     let mounted = true;
@@ -90,15 +92,37 @@ const Profile = () => {
         </h2>
         <p className="text-blue-500 font-semibold">@{user.username}</p>
         <p className="mt-3 text-gray-700 italic">{user.bio}</p>
-        <button
-          onClick={() => alert("Edit profile coming soon!")}
-          className="mt-6 px-6 py-2 rounded-full font-semibold shadow 
-             border border-blue-500 text-blue-500 
-             hover:bg-blue-500 hover:text-white 
-             transition duration-200"
-        >
-          Edit Profile
-        </button>
+        <div className="mt-6 flex justify-center gap-3">
+          <button
+            onClick={() => alert("Edit profile coming soon!")}
+            className="px-5 py-2 rounded-full font-semibold shadow 
+               border border-blue-500 text-blue-500 
+               hover:bg-blue-500 hover:text-white 
+               transition duration-200"
+          >
+            Edit Profile
+          </button>
+          <button
+            onClick={() => {
+              try {
+                logout();
+              } catch (e) {
+                try {
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("artist");
+                  localStorage.removeItem("artistId");
+                } catch (er) {}
+                window.location.href = "/";
+              }
+            }}
+            className="px-5 py-2 rounded-full font-semibold shadow 
+               border border-red-500 text-red-500 
+               hover:bg-red-500 hover:text-white 
+               transition duration-200"
+          >
+            Log out
+          </button>
+        </div>
       </div>
     </div>
   );

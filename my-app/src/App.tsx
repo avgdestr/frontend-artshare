@@ -8,8 +8,11 @@ import Profile from "./components/Profile";
 import Signup from "./components/Signup";
 import Signin from "./components/Signin";
 import RequireAuth from "./components/RequireAuth";
+import { useAuth } from "./services/AuthContext";
 
 function App() {
+  const { token } = useAuth();
+
   return (
     <div className="App justify-content-center">
       <header className="App-header d-flex justify-content-center align-items-center">
@@ -30,7 +33,7 @@ function App() {
         >
           Home
         </NavLink>
-        {localStorage.getItem("token") ? (
+        {token ? (
           <>
             <NavLink
               to="/shareart"
@@ -45,19 +48,22 @@ function App() {
               profile
             </NavLink>
           </>
-        ) : null}
-        <NavLink
-          to="/signup"
-          className={({ isActive }) => (isActive ? "link active" : "link")}
-        >
-          Sign Up
-        </NavLink>
-        <NavLink
-          to="/signin"
-          className={({ isActive }) => (isActive ? "link active" : "link")}
-        >
-          Sign In
-        </NavLink>
+        ) : (
+          <>
+            <NavLink
+              to="/signup"
+              className={({ isActive }) => (isActive ? "link active" : "link")}
+            >
+              Sign Up
+            </NavLink>
+            <NavLink
+              to="/signin"
+              className={({ isActive }) => (isActive ? "link active" : "link")}
+            >
+              Sign In
+            </NavLink>
+          </>
+        )}
       </nav>
       <nav className="d-flex justify-content-end bg-gray-200 text-dark p-1">
         <span className="text-sm italic">

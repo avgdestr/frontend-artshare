@@ -18,10 +18,10 @@ const Welcome = () => {
         <div className="text-light m-4 div1 p-5 col-md-12">
           <p>
             <b>
-              <i>Welcome to Art share</i> — share your art with the world! Whether
-              you're an aspiring artist or a seasoned creator, our platform
-              provides a supportive community where you can showcase, gain
-              inspiration, and connect with fellow art enthusiasts. Join us
+              <i>Welcome to Art share</i> — share your art with the world!
+              Whether you're an aspiring artist or a seasoned creator, our
+              platform provides a supportive community where you can showcase,
+              gain inspiration, and connect with fellow art enthusiasts. Join us
               today and let your creativity shine!
             </b>
           </p>

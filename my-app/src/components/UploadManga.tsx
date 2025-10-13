@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../services/AuthContext";
 import { createArtwork } from "../services/apihelper";
 
 const UploadManga = () => {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [description, setDescription] = useState("");
+  // description/caption removed (backend doesn't support it)
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [progress, setProgress] = useState<number>(0);
+  const { logout } = useAuth();
   const [artist, setArtist] = useState<{
     username?: string;
     profile_picture?: string;
@@ -34,7 +36,7 @@ const UploadManga = () => {
     try {
       // Resize image on the client to max 1080px and compress to JPEG
       const fileToUpload = image ? await resizeImage(image, 1080, 0.85) : image;
-      const data = { title, image: fileToUpload as any, description };
+      const data = { title, image: fileToUpload as any };
       const created = await createArtwork(data as any, (ev) => {
         if (!ev) return;
         const loaded = ev.loaded ?? 0;
@@ -48,7 +50,6 @@ const UploadManga = () => {
         URL.revokeObjectURL(preview);
         setPreview(null);
       }
-      setDescription("");
       console.log(created);
     } catch (err: any) {
       setMessage(err.response?.data || err.message || "Upload failed");
@@ -187,15 +188,7 @@ const UploadManga = () => {
                 </div>
               </div>
             </div>
-            <button
-              className="text-sm text-red-500"
-              onClick={() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("artist");
-                localStorage.removeItem("artistId");
-                window.location.reload();
-              }}
-            >
+            <button className="text-sm text-red-500" onClick={logout}>
               Logout
             </button>
           </div>
@@ -209,12 +202,7 @@ const UploadManga = () => {
               className="w-full mb-3 px-3 py-2 border rounded focus:outline-none"
             />
 
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Write a caption..."
-              className="w-full mb-3 px-3 py-2 border rounded resize-none h-32 focus:outline-none"
-            />
+            {/* caption removed */}
 
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-500">

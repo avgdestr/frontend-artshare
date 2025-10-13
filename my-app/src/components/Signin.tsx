@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginArtist, getCurrentArtist } from "../services/apihelper";
+import { useAuth } from "../services/AuthContext";
 
 const Signin = () => {
   const [username, setUsername] = useState("");
@@ -8,6 +9,7 @@ const Signin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { setToken, setArtist } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +57,12 @@ const Signin = () => {
               localStorage.setItem("artistId", String((artist as any).id));
           } catch (e) {}
         }
+
+        // update context
+        try {
+          setToken(token);
+          if (artist) setArtist(artist);
+        } catch (e) {}
 
         navigate("/profile");
         return;

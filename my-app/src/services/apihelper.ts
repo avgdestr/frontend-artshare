@@ -37,7 +37,6 @@ export interface Artwork {
 export interface ArtworkData {
     title: string;
     image: File;
-    description?: string;
 }
 
 // Artist API
@@ -96,7 +95,6 @@ export async function createArtwork(
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("image", data.image);
-    if (data.description) formData.append("description", data.description);
 
     const response = await api.post<Artwork>("/api/artworks/", formData, {
         onUploadProgress,
@@ -118,7 +116,7 @@ export async function updateArtwork(id: number, data: Partial<ArtworkData>): Pro
     const formData = new FormData();
     if (data.title) formData.append("title", data.title);
     if (data.image) formData.append("image", data.image);
-    if (data.description) formData.append("description", data.description);
+    // description field removed (backend does not accept it)
 
     const response = await api.patch<Artwork>(`/api/artworks/${id}/`, formData);
     return response.data;
