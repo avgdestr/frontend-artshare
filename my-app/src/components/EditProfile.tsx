@@ -68,17 +68,21 @@ const EditProfile: React.FC = () => {
 
   const handleDelete = async () => {
     if (!user) return;
-    if (!confirm("Are you sure you want to delete your account? This is irreversible.")) return;
+    const ok = confirm(
+      "Permanently delete your account? This will remove your profile and all associated data on the server. This action cannot be undone."
+    );
+    if (!ok) return;
     setLoading(true);
+    setError(null);
     try {
       await deleteArtist(user.id);
-      // Clear local state and logout
       try {
         localStorage.removeItem("token");
         localStorage.removeItem("artist");
         localStorage.removeItem("artistId");
       } catch (e) {}
       setArtist(null);
+      alert("Your account has been deleted.");
       logout();
     } catch (err: any) {
       console.error(err);
