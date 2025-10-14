@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getArtist } from "../services/apihelper";
 import { API_BASE_URL } from "../services/api";
 import type { Artist as ArtistType } from "../services/apihelper";
@@ -9,6 +10,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let mounted = true;
@@ -94,7 +96,7 @@ const Profile = () => {
         <p className="mt-3 text-gray-700 italic">{user.bio}</p>
         <div className="mt-6 flex justify-center gap-3">
           <button
-            onClick={() => alert("Edit profile coming soon!")}
+            onClick={() => navigate("/profile/edit")}
             className="px-5 py-2 rounded-full font-semibold shadow 
                border border-blue-500 text-blue-500 
                hover:bg-blue-500 hover:text-white 

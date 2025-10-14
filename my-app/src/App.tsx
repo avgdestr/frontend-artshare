@@ -5,6 +5,7 @@ import GetManga from "./components/GetManga";
 import UploadManga from "./components/UploadManga";
 import Welcome from "./components/Welcome";
 import Profile from "./components/Profile";
+import EditProfile from "./components/EditProfile";
 import Signup from "./components/Signup";
 import Signin from "./components/Signin";
 import RequireAuth from "./components/RequireAuth";
@@ -91,6 +92,14 @@ function App() {
             </RequireAuth>
           }
         ></Route>
+        <Route
+          path="/profile/edit"
+          element={
+            <RequireAuth>
+              <EditProfile />
+            </RequireAuth>
+          }
+        />
         <Route path="*" element={<h2>Page Not Found</h2>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />

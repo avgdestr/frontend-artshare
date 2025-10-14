@@ -125,3 +125,8 @@ export async function updateArtwork(id: number, data: Partial<ArtworkData>): Pro
 export async function deleteArtwork(id: number): Promise<void> {
     await api.delete(`/api/artworks/${id}/`);
 }
+
+// Delete artist (current authenticated artist). Backend must accept DELETE /api/artists/:id/
+export async function deleteArtist(id: number): Promise<void> {
+    await api.delete(`/api/artists/${id}/`);
+}
