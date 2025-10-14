@@ -60,7 +60,7 @@ const EditProfile: React.FC = () => {
       navigate("/profile");
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data || err.message || String(err));
+      setError(formatError(err));
     } finally {
       setLoading(false);
     }
@@ -86,11 +86,31 @@ const EditProfile: React.FC = () => {
       logout();
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data || err.message || String(err));
+      setError(formatError(err));
     } finally {
       setLoading(false);
     }
   };
+
+  function formatError(err: any) {
+    // Axios-style error may include response.data which can be an object
+    try {
+      if (!err) return "Unknown error";
+      if (err.response && err.response.data) {
+        const d = err.response.data;
+        if (typeof d === "string") return d;
+        try {
+          return JSON.stringify(d);
+        } catch (e) {
+          return String(d);
+        }
+      }
+      if (err.message) return err.message;
+      return String(err);
+    } catch (e) {
+      return "An error occurred";
+    }
+  }
 
   if (!user) return <div className="p-4">No user data available</div>;
 
