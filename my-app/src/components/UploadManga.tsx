@@ -205,9 +205,7 @@ const UploadManga = () => {
             {/* caption removed */}
 
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-500">
-                {image ? image.name : "No file selected"}
-              </div>
+              {/* no filename/status text by user request */}
               <button
                 type="submit"
                 disabled={loading}
