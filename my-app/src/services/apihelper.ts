@@ -127,6 +127,8 @@ export async function deleteArtwork(id: number): Promise<void> {
 }
 
 // Delete artist (current authenticated artist). Backend must accept DELETE /api/artists/:id/
-export async function deleteArtist(id: number): Promise<void> {
-    await api.delete(`/api/artists/${id}/`);
+export async function deleteArtist(idOrUsername: number | string): Promise<void> {
+    // Accept either numeric id or username depending on backend routing
+    const ident = encodeURIComponent(String(idOrUsername));
+    await api.delete(`/api/artists/${ident}/`);
 }

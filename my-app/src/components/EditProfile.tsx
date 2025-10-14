@@ -75,7 +75,9 @@ const EditProfile: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      await deleteArtist(user.id);
+      // Prefer username-based route if available (some backends use username in the URL)
+      const ident = user.username || user.id;
+      await deleteArtist(ident);
       try {
         localStorage.removeItem("token");
         localStorage.removeItem("artist");
