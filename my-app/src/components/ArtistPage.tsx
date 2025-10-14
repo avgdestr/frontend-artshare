@@ -154,7 +154,14 @@ const ArtistPage: React.FC = () => {
                   onClick={() => setLightboxIdx(idx)}
                 >
                   <img
-                    src={typeof a.image === "string" ? ( /^https?:\/\//i.test(a.image) ? a.image : `${API_BASE_URL.replace(/\/$/, "")}/${String(a.image).replace(/^\//, "")}` ) : ""
+                    src={
+                      typeof a.image === "string"
+                        ? /^https?:\/\//i.test(a.image)
+                          ? a.image
+                          : `${API_BASE_URL.replace(/\/$/, "")}/${String(
+                              a.image
+                            ).replace(/^\//, "")}`
+                        : ""
                     }
                     alt={a.title || "Artwork"}
                     className="w-full object-cover"
