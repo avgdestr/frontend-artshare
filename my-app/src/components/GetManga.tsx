@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllArtworks } from "../services/apihelper";
+import { resolveMediaUrl } from "../services/api";
 
 interface ArtworkItem {
   id: number;
@@ -73,7 +74,7 @@ const GetManga = () => {
             </div>
             <img
               className="art-img p-1 img"
-              src={img.image}
+              src={typeof img.image === "string" ? (resolveMediaUrl(img.image) || img.image) : ""}
               alt={img.title}
               onClick={() => setSelectedIdx(idx)}
               style={{ cursor: "pointer" }}
@@ -127,7 +128,7 @@ const GetManga = () => {
             &#8592;
           </button>
           <img
-            src={(items[selectedIdx] as any).image}
+            src={resolveMediaUrl((items[selectedIdx] as any).image) || (items[selectedIdx] as any).image}
             alt={(items[selectedIdx] as any).title}
             className="lightbox-img"
           />

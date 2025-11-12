@@ -69,3 +69,10 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+// Helper to resolve relative media paths returned by the API into absolute URLs
+export function resolveMediaUrl(url?: string | null) {
+  if (!url) return null;
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${normalized}/${String(url).replace(/^\//, "")}`;
+}

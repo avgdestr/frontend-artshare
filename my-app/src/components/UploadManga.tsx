@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../services/AuthContext";
 import { createArtwork } from "../services/apihelper";
+import { resolveMediaUrl } from "../services/api";
 
 const UploadManga = () => {
   const [title, setTitle] = useState("");
@@ -174,7 +175,8 @@ const UploadManga = () => {
             <div className="flex items-center">
               <img
                 src={
-                  artist?.profile_picture ?? "https://via.placeholder.com/40"
+                  resolveMediaUrl(artist?.profile_picture) ||
+                  "https://via.placeholder.com/40"
                 }
                 alt="avatar"
                 className="w-10 h-10 rounded-full mr-3 object-cover"
